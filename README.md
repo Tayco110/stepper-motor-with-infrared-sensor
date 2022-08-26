@@ -1,1 +1,1 @@
-# stepper-motor-with-infrared-sensor
+# Stepper Motor with Infrared Sensor
