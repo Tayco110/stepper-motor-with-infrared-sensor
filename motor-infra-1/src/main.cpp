@@ -8,7 +8,7 @@ int ledInfra = 13; //pino do led do infra
 
 int obstacle; //variável que recebe o valor lógico do IR
 int indexOut, indexIn; //variáveis auxiliares
-int atraso =  5000; //variável para delay em ms usada na rotina
+int atraso =  100; //variável para delay em ms usada na rotina
 
 char answer; //resposta da tag posicionada
 
@@ -39,8 +39,9 @@ void loop() {
     for(indexOut = 0; indexOut < 4; indexOut ++){
       for(indexIn = 0; indexIn < 4; indexIn ++){
         digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut][indexIn]);
-        delay(atraso);
-      }   
+       
+      }  
+      delay(atraso);
     }
   }
 }
