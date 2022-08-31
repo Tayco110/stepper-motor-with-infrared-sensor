@@ -13,7 +13,7 @@ int isObstacle = HIGH; // define obstáculo
 int isObstaclePin = 6; // define pino para obstáculo
 int LED = 13;
 
-char answer; //resposta da tag posicionada
+char answer = 99; //resposta da tag posicionada
 
 int debuguer = 1; //variável para debugar
 
@@ -37,31 +37,52 @@ void setup() {
 
 //código a ser rodado em loop
 void loop() {
+
+  Serial.println("ENTREI NO LOOP PRINCIPAL");
   isObstacle = digitalRead(isObstaclePin);
 
   //Serial.println(debuguer);
   //obstacle = digitalRead(outputInfra);
   if(isObstacle == LOW){
-    for(indexOut = 0; indexOut < 4; indexOut ++){
+    Serial.println(isObstacle);
+    Serial.println("ENTREI NO LOOP DO LOW");
+    for(indexOut = 0; indexOut < 400; indexOut ++){
       for(indexIn = 0; indexIn < 4; indexIn ++){
-        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut][indexIn]);
-       
+        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut%4][indexIn]);
+        
       } 
-     
       delay(atraso);
+      
     }
+   
   }
-    if(isObstacle == HIGH){
-      for(indexOut = 0; indexOut < 4; indexOut ++){
+  Serial.print("Os dados estão corretos? \n 1 == S ou 0 == N \n");
+  while(answer == 99){
+    char answer = Serial.read();
+    if(answer == 115 || answer == 83){ // S ou s
+      Serial.println(answer);
+      for(indexOut = 1; indexOut < 200; indexOut ++){
         for(indexIn = 0; indexIn < 4; indexIn ++){
         digitalWrite(pinsPonteH[indexIn], ponteHtableHorario[indexOut][indexIn]);
-      
-      
-      
+        }
+        delay(atraso);
       }
-       delay(atraso);
+      
+      break;
+    }
+    if(answer == 110 || answer == 78){ // N ou n
+      Serial.println(answer);
+      for(indexOut = 1; indexOut < 200; indexOut ++){
+        for(indexIn = 0; indexIn < 4; indexIn ++){
+        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut][indexIn]);
+        }
+        delay(atraso);
+      }
+      break;
+    }
+    answer == 99;
   }
-}
-
+   //Serial.print("Os dados estão corretos? \n 1 == S ou 0 == N \n");
+   //int resposta = Serial.read();
 }
 
