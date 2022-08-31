@@ -18,10 +18,10 @@ char answer = 99; //resposta da tag posicionada
 int debuguer = 1; //variável para debugar
 
 //valores lógicos para os passos no sentido horário
-int ponteHtableHorario[4][4] = {{1,0,0,1},{0,1,0,1},{0,1,1,0},{1,0,1,0}};
+int ponteHtableHorario[4][4] = {{0,1,1,0},{0,1,0,1},{1,0,0,1},{1,0,1,0}};
 
 //valores lógicos para os passos no sentido anti-horário
-int ponteHtableNHorario[4][4]= {{0,1,1,0},{0,1,0,1},{1,0,0,1},{1,0,1,0}};
+int ponteHtableNHorario[4][4]= {{1,0,0,1},{0,1,0,1},{0,1,1,0},{1,0,1,0}};
                             
 //setup
 void setup() {
@@ -46,9 +46,9 @@ void loop() {
   if(isObstacle == LOW){
     Serial.println(isObstacle);
     Serial.println("ENTREI NO LOOP DO LOW");
-    for(indexOut = 0; indexOut < 400; indexOut ++){
+    for(indexOut = 0; indexOut < 800; indexOut ++){
       for(indexIn = 0; indexIn < 4; indexIn ++){
-        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut%4][indexIn]);
+        digitalWrite(pinsPonteH[indexIn], ponteHtableHorario[indexOut%4][indexIn]);
         
       } 
       delay(atraso);
@@ -59,25 +59,26 @@ void loop() {
   Serial.print("Os dados estão corretos? \n 1 == S ou 0 == N \n");
   while(answer == 99){
     char answer = Serial.read();
-    if(answer == 115 || answer == 83){ // S ou s
+    if(answer == 115 || answer == 83){
       Serial.println(answer);
-      for(indexOut = 1; indexOut < 200; indexOut ++){
+      for(indexOut = 1; indexOut < 800; indexOut ++){
         for(indexIn = 0; indexIn < 4; indexIn ++){
-        digitalWrite(pinsPonteH[indexIn], ponteHtableHorario[indexOut][indexIn]);
+        digitalWrite(pinsPonteH[indexIn], ponteHtableHorario[indexOut%4][indexIn]);
         }
         delay(atraso);
       }
-      
       break;
     }
-    if(answer == 110 || answer == 78){ // N ou n
+    if(answer == 110 || answer == 78){
       Serial.println(answer);
-      for(indexOut = 1; indexOut < 200; indexOut ++){
+      Serial.println("to aqui");
+      for(indexOut = 1; indexOut < 800; indexOut ++){
         for(indexIn = 0; indexIn < 4; indexIn ++){
-        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut][indexIn]);
+        digitalWrite(pinsPonteH[indexIn], ponteHtableNHorario[indexOut%4][indexIn]);
         }
         delay(atraso);
       }
+        
       break;
     }
     answer == 99;
@@ -85,4 +86,3 @@ void loop() {
    //Serial.print("Os dados estão corretos? \n 1 == S ou 0 == N \n");
    //int resposta = Serial.read();
 }
-
