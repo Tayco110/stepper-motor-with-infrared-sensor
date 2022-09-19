@@ -8,10 +8,10 @@ int pinsInfra[2] = {6,5};
 int outputInfra[2] = {LOW, LOW};
 
 //valores lógicos para os passos no sentido horário
-int ponteHtableHorario[4][4] = {{1,0,0,1},{0,1,0,1},{0,1,1,0},{1,0,1,0}};
+int ponteHtableHorario[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 
 //valores lógicos para os passos no sentido anti-horário
-int ponteHtableNHorario[4][4] = {{0,1,1,0},{0,1,0,1},{1,0,0,1},{1,0,1,0}};
+int ponteHtableNHorario[4][4] = {{0,0,1,0},{0,1,0,0},{1,0,0,0},{0,0,0,1}};
 
 //valores lógicos para parar o motor
 //int ponteHstop[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
@@ -72,13 +72,13 @@ void stopSteps (){
   for(indexHPins = 0; indexHPins < 4; indexHPins++){
     digitalWrite(pinsPonteH[indexHPins], 0);//escreve 0 em todos os pinos
   } 
-  delay(10);
+  delay(1000);
 }
 
 //função temporária para fazer o check na tag
 bool tagCheck(){
   bool rtn;
-  Serial.print("Os dados estão corretos? \n S/s ou  N/n \n");
+  Serial.print("os dados estão corretos? \n S/s ou  N/n \n");
   while(answer == 99){
     answer = Serial.read();//aguarda a resposta do usuário
     if(answer == 115 || answer == 83){//S ou s em unicode
@@ -113,22 +113,24 @@ void loop() {
     //garante que o motor esteja parado
     stopSteps();
     //leva o rolo de tags do ponto A até o ponto B (ponto B == camera)
-    steps(200, 1);
+    steps(68, 1);
     //Se no ponto B a tag estiver OK
     if(tagCheck()){
       //mude o passo para avançar de tag em tag
       while (1)
       {
-        steps(100,1);
-        delay(1000);
+        steps(50,1);
+        stopSteps();
+        delay(1);
       }
     }
     //Se no ponto B a tag não estiver OK
     else{
       //garanta que o motor esta parado
-      stopSteps();
+     // stopSteps();   
       //rebobine para a posição inicial para trocar o rolo
       steps(200, 0);
     }
   }
+  
 }
