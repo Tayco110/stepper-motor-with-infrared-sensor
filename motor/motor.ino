@@ -6,7 +6,6 @@
 int PIR1 = 0;
 int PIR2 = 0;
 int flag_motor = 0;
-int flag_stopMotor = 0;
  
  void setup() {
  // Definindo ambos os pinos acima como saída
@@ -23,16 +22,11 @@ int flag_stopMotor = 0;
     Serial.println(flag_motor);
     flag_motor = 1;
   }
-  else if (PIR1 == HIGH){
+  else if ((PIR1 == HIGH) || (PIR1 == LOW && PIR2 == LOW)){
     Serial.println(flag_motor);
     flag_motor = 0;
   }
-  else if (PIR1 == LOW && PIR2 == LOW){
-    Serial.println(flag_motor);
-    flag_motor = 0;
-    flag_stopMotor = 1;
-  }
-  if (flag_motor == 1 && flag_stopMotor == 0){
+  if (flag_motor == 1){
     digitalWrite(dirPin,HIGH);
     for(int x = 0; x < 1600; x++) {
       digitalWrite(stepPin,HIGH); 
