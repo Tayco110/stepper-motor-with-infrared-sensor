@@ -5,11 +5,12 @@
 // Definição dos pinos 
 #define stepPinX 2 //Passo eixo X
 #define dirPinX 5 // Direção eixo X
-//#define stepPinY 3 //Passo eixo Y
-//#define dirPinY 6 // Direção eixo Y
+#define stepPinY 3 //Passo eixo Y
+#define dirPinY 6 // Direção eixo Y
 
 int PIR1 = 0;
 int flag_motor = 0;
+int flagDir = 1;
 
 // tag pequena = 0, tag grande = 1
 int tagSize = 1;
@@ -21,8 +22,8 @@ String incomingByte; // for incoming serial data
  // Definindo ambos os pinos acima como saída
    pinMode(stepPinX,OUTPUT); 
    pinMode(dirPinX,OUTPUT);
-/*   pinMode(stepPinY,OUTPUT); 
-   pinMode(dirPinY,OUTPUT);*/
+   pinMode(stepPinY,OUTPUT); 
+   pinMode(dirPinY,OUTPUT);
    pinMode(A10, INPUT);
    Serial.begin(9600);
  }
@@ -32,6 +33,7 @@ String incomingByte; // for incoming serial data
   
   // Se apenas o sensor 1 for low vai ativar a flag de rotação do motor 1
   if (PIR1 < 50 && flag_motor == 0){
+    flag_motor = 1;
     Serial.println(flag_motor);
     digitalWrite(dirPinX,HIGH);
     for(int x = 0; x < 2570; x++) {
@@ -40,14 +42,7 @@ String incomingByte; // for incoming serial data
       digitalWrite(stepPinX,LOW); 
       delayMicroseconds(300); 
      }
-    flag_motor = 1;
   }
-
-  // Se o sensor 1 for high vai desativar a flag de rotação do motor 1
-  /*else if (PIR1 > 50){
-    //Serial.println(flag_motor);
-    flag_motor = 0;
-  }*/
 
  while (Serial.available()) {
     incomingByte = Serial.readString();
@@ -70,12 +65,12 @@ String incomingByte; // for incoming serial data
     else if (incomingByte != "PROBLEMA\n" && tagSize == 0){
       Serial.println("Prosseguir");
       if (flagFirstTag == 0){
-        delta = 775;
+        delta = 740;
         Serial.println("Primeira tag");
         flagFirstTag = 1;
       }
       else{
-        delta = 775;
+        delta = 740;
       }
       digitalWrite(dirPinX,HIGH);
       Serial.println(delta);
@@ -96,25 +91,110 @@ String incomingByte; // for incoming serial data
     }
 
     // Tag grande
-    else if (incomingByte != "PROBLEMA\n" && tagSize == 1){
+    // Tag Boa
+    else if (incomingByte == "BOA\n" && tagSize == 1){
       Serial.println("Prosseguir");
       digitalWrite(dirPinX,HIGH);
       Serial.println(delta);
+      // Move uma tag
       for(int x = 0; x < 775; x++) {
         digitalWrite(stepPinX,HIGH); 
         delayMicroseconds(300); 
         digitalWrite(stepPinX,LOW); 
         delayMicroseconds(300); 
        }
-      /*digitalWrite(dirPinY,HIGH);
-      for(int x = 0; x < 1600; x++) {
-        digitalWrite(stepPinY,HIGH); 
-        delayMicroseconds(500); 
-        digitalWrite(stepPinY,LOW); 
-        delayMicroseconds(500); 
-       }*/
-      
+       //Corte
+      if (flagDir%2 != 0){
+        digitalWrite(dirPinY,HIGH);
+        for(int x = 0; x < 14800; x++) {
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+        }  
+      }
+      else{
+        digitalWrite(dirPinY,LOW);
+        for(int y = 0; y < 14800; y++) {
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+         }
+      }
+      flagDir++;
     }
+    // Tag Qualidade
+    else if (incomingByte == "QUALIDADE\n" && tagSize == 1){
+      Serial.println("Prosseguir");
+      digitalWrite(dirPinX,HIGH);
+      Serial.println(delta);
+      // Move uma tag
+      for(int x = 0; x < 775; x++) {
+        digitalWrite(stepPinX,HIGH); 
+        delayMicroseconds(300); 
+        digitalWrite(stepPinX,LOW); 
+        delayMicroseconds(300); 
+       }
+       //Corte
+      if (flagDir%2 != 0){
+        digitalWrite(dirPinY,HIGH);
+        for(int x = 0; x < 14800; x++) {
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+        }  
+      }
+      else{
+        digitalWrite(dirPinY,LOW);
+        for(int y = 0; y < 14800; y++) {
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+         }
+      }
+      flagDir++;
+    }
+
+    // Tag Descarte
+    else if (incomingByte == "DESCARTE\n" && tagSize == 1){
+      Serial.println("Prosseguir");
+      digitalWrite(dirPinX,HIGH);
+      Serial.println(delta);
+      // Move uma tag
+      for(int x = 0; x < 775; x++) {
+        digitalWrite(stepPinX,HIGH); 
+        delayMicroseconds(300); 
+        digitalWrite(stepPinX,LOW); 
+        delayMicroseconds(300); 
+       }
+       //Corte
+      Serial.print(flagDir);
+      if (flagDir%2 == 0){
+        Serial.print("Par");
+        digitalWrite(dirPinY,HIGH);
+        for(int x = 0; x < 14800; x++) {
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+        }  
+      }
+      else if (flagDir%2 != 0){
+        Serial.print("Impar");
+        digitalWrite(dirPinY,LOW);
+        for(int y = 0; y < 14800; y++) {
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+         }
+      }
+      flagDir++;
+    }
+    
   }
   
   
