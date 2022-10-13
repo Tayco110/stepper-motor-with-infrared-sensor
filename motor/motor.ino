@@ -1,6 +1,7 @@
  // Controle de motor - CNC Shield
 
 #include <string.h>
+#include <Servo.h>
  
 // Definição dos pinos 
 #define stepPinX 2 //Passo eixo X
@@ -18,6 +19,11 @@ int delta = 0; // erro dos espaços entre as tags
 int flagFirstTag = 0;
 String incomingByte; // for incoming serial data
 
+Servo s1; // Variável SERVO ALÇAPÃO 1
+Servo s2; // Variável SERVO ALÇAPÃO 2
+int pos1; // Posição SERVO ALÇAPÃO 1
+int pos2; // Posição SERVO ALÇAPÃO 2
+
  void setup() {
  // Definindo ambos os pinos acima como saída
    pinMode(stepPinX,OUTPUT); 
@@ -25,6 +31,10 @@ String incomingByte; // for incoming serial data
    pinMode(stepPinY,OUTPUT); 
    pinMode(dirPinY,OUTPUT);
    pinMode(A10, INPUT);
+   s1.attach(52); //SERVO ALÇAPÃO 1
+   s2.attach(50); //SERVO ALÇAPÃO 2
+   s1.write(85); // Inicia SERVO ALÇAPÃO 1 FECHADO 
+   s2.write(160); // Inicia SERVO ALÇAPÃO 2 FECHADO 
    Serial.begin(9600);
  }
  
@@ -156,13 +166,23 @@ String incomingByte; // for incoming serial data
          }
       }
       flagDir++;
+      delay(100);
+      for(pos1 = 85; pos1 > 20; pos1--){
+        s1.write(pos1);
+        delay(10);
+      }
+      delay(1000);
+      for(pos1 = 20; pos1 <= 85; pos1++){
+        s1.write(pos1);
+        delay(10);
+      }
+      
     }
 
     // Tag Descarte
     else if (incomingByte == "DESCARTE\n" && tagSize == 1){
       Serial.println("Prosseguir");
       digitalWrite(dirPinX,HIGH);
-      Serial.println(delta);
       // Move uma tag
       for(int x = 0; x < 775; x++) {
         digitalWrite(stepPinX,HIGH); 
@@ -172,8 +192,7 @@ String incomingByte; // for incoming serial data
        }
        //Corte
       Serial.print(flagDir);
-      if (flagDir%2 == 0){
-        Serial.print("Par");
+      if (flagDir%2 != 0){
         digitalWrite(dirPinY,HIGH);
         for(int x = 0; x < 14800; x++) {
           digitalWrite(stepPinY,HIGH); 
@@ -182,8 +201,7 @@ String incomingByte; // for incoming serial data
           delayMicroseconds(100); 
         }  
       }
-      else if (flagDir%2 != 0){
-        Serial.print("Impar");
+      else{
         digitalWrite(dirPinY,LOW);
         for(int y = 0; y < 14800; y++) {
           digitalWrite(stepPinY,LOW); 
@@ -193,6 +211,16 @@ String incomingByte; // for incoming serial data
          }
       }
       flagDir++;
+      delay(100); 
+      for(pos2 = 160; pos2 > 100; pos2--){
+        s2.write(pos2);
+        delay(10);
+      }
+      delay(1000);
+      for(pos2 = 100; pos2 <= 160; pos2++){
+        s2.write(pos2);
+        delay(10);
+      }
     }
     
   }
