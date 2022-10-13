@@ -33,7 +33,7 @@ int pos2; // Posição SERVO ALÇAPÃO 2
    pinMode(A10, INPUT);
    s1.attach(52); //SERVO ALÇAPÃO 1
    s2.attach(50); //SERVO ALÇAPÃO 2
-   s1.write(85); // Inicia SERVO ALÇAPÃO 1 FECHADO 
+   s1.write(130); // Inicia SERVO ALÇAPÃO 1 FECHADO 
    s2.write(160); // Inicia SERVO ALÇAPÃO 2 FECHADO 
    Serial.begin(9600);
  }
@@ -167,12 +167,12 @@ int pos2; // Posição SERVO ALÇAPÃO 2
       }
       flagDir++;
       delay(100);
-      for(pos1 = 85; pos1 > 20; pos1--){
+      for(pos1 = 130; pos1 > 60; pos1--){
         s1.write(pos1);
         delay(10);
       }
       delay(1000);
-      for(pos1 = 20; pos1 <= 85; pos1++){
+      for(pos1 = 60; pos1 <= 130; pos1++){
         s1.write(pos1);
         delay(10);
       }
