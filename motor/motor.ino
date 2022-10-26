@@ -9,6 +9,7 @@
 #define stepPinY 3 //Passo eixo Y
 #define dirPinY 6 // Direção eixo Y
 
+const int pinoChave = 24; //PINO DIGITAL UTILIZADO PELA CHAVE FIM DE CURSO
 int PIR1 = 0;
 int flag_motor = 0;
 int flagDir = 1;
@@ -31,7 +32,8 @@ int pos2; // Posição SERVO ALÇAPÃO 2
    pinMode(stepPinY,OUTPUT); 
    pinMode(dirPinY,OUTPUT);
    pinMode(A10, INPUT);
-   s1.attach(52); //SERVO ALÇAPÃO 1
+   pinMode(pinoChave, INPUT_PULLUP); //DEFINE O PINO COMO ENTRADA / "_PULLUP" É PARA ATIVAR O RESISTOR INTERNO DO ARDUINO PARA GARANTIR QUE NÃO EXISTA FLUTUAÇÃO ENTRE 0 (LOW) E 1 (HIGH)
+   s1.attach(51); //SERVO ALÇAPÃO 1
    s2.attach(50); //SERVO ALÇAPÃO 2
    s1.write(130); // Inicia SERVO ALÇAPÃO 1 FECHADO 
    s2.write(160); // Inicia SERVO ALÇAPÃO 2 FECHADO 
@@ -39,8 +41,18 @@ int pos2; // Posição SERVO ALÇAPÃO 2
  }
  
  void loop() {
-  PIR1 = analogRead(A10);
+
+  if(digitalRead(pinoChave) == LOW){ //SE A LEITURA DO PINO FOR IGUAL A LOW, FAZ
+      digitalWrite(dirPinY,LOW);
+        for(int y = 0; y < 14800; y++) {
+          digitalWrite(stepPinY,LOW); 
+          delayMicroseconds(100); 
+          digitalWrite(stepPinY,HIGH); 
+          delayMicroseconds(100); 
+         }
+  }
   
+  PIR1 = analogRead(A10);
   // Se apenas o sensor 1 for low vai ativar a flag de rotação do motor 1
   if (PIR1 < 50 && flag_motor == 0){
     flag_motor = 1;
